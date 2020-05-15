@@ -1,0 +1,592 @@
+#:import Clock kivy.clock.Clock
+
+
+<SM>:
+    data_pass: '' 
+    id: screen_manager
+    ScreenMain:
+        id: screen_main
+    ScreenOther:
+        id: screen_other
+    ScreenSearchIN:
+        id: ininput_screen
+    #     id: ininputscreen
+    #     label_text: screen_main.data_pass
+    ScreenFixIN:
+        id: screen_fixin
+    ScreenOutput:
+        id: screen_labeloutput
+    ScreenOrderList:
+        id: screen_orderlist
+    ScreenListOptions:
+        id: screen_listoptions
+    ScreenInventoryTools:
+        id: screen_invtools
+    ScreenAuditOrders:
+        id: screen_audit
+
+
+<ScreenMain>:
+    name: 'mainscreen'
+    Button:
+        pos: (root.width-20, root.height-20)
+        text: '*'
+        on_release:
+            print('Mystery button pressed')
+            app.mystery_button()
+    
+    GridLayout:
+        cols: 1
+        spacing: '8dp'
+        padding: '20dp'
+        size_hint: (1, 1)
+
+        Label:
+            id: 'ProgramTitle'
+            text: "[color=ff3333][sub]JL[/sub][/color] [color=3333ff][b]TC Tools[/b][/color] [sup]v1[/sup]"
+            markup: True
+            font_size: '14pt' # was 30
+            size_y_hint: None
+
+
+        Button:
+            id: order_search_button
+            text: 'Search'
+            font_size: '16pt' # 60 #18
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'ininputscreen'
+                app.root.ids.screen_labeloutput.ids.labelout_sv.clear_widgets()
+
+            height: '48dp'
+            background_normal: ''
+            background_color: (0, 0.6, 0.4, 1)
+
+        # Button:
+        #     id: search_in_button
+        #     text: 'Search for an item number pair'
+        #     font_size: 18
+        #     on_press:
+        #         print('INSearch')
+        #     background_normal: ''
+        #     background_color: (0, 0.6, 0.4, 1)
+
+        Button:
+            id: show_orders_button
+            text: 'Display orders'
+            font_size: '16pt'
+            background_normal: ''
+            background_color: (0, 0.6, 0.4, 1)
+            on_release:
+                app.all_order_screen()
+
+                #app.populate_order_screen()
+                #root.manager.transition.direction = 'left'
+                #root.manager.current = 'orderlistscreen'
+
+        Button:
+            id: audit_button
+            text: 'Audit orders'
+            font_size: '16pt'
+            background_normal: ''
+            background_color: (0, 0.6, 0.4, 1)
+            on_release:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'auditscreen'
+                # app.root.ids.screen_labeloutput.ids.labelout_sv.clear_widgets()
+                # app.audit_orders()
+
+
+        Button:
+            id: update_sta_button
+            text: 'Update STA Data\nSpreadsheet'
+            font_size: '14pt'
+            on_release:
+                print('Update STA')
+                app.update_sta_button_action()
+            background_normal: ''
+            background_color: (0, 0.6, 0.4, 1)
+
+
+        Button:
+            id: invtools_button
+            text: 'Inventory Tools'
+            font_size: '14pt'
+            background_normal: ''
+            background_color: (0, 0.5, 0.4, 1)
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'invtoolsscreen'
+
+        Button:
+            id: other_button
+            text: 'Other'
+            font_size: '16pt'
+            background_normal: ''
+            background_color: (0, 0.6, 0.7, 1)
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'otherscreen'
+
+        # Button:
+        #     id: testing_button
+        #     text: 'For Testing'
+        #     on_release:
+        #         print('Testing button pressed')
+        #         # print(self.parent)
+        #         # print(self.parent.parent)
+        #         # print(self.parent.parent.parent)
+        #         app.testingbutt()
+
+<ScreenInventoryTools>:
+    name: 'invtoolsscreen'
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+
+        CustActionBar:
+
+        Label:
+            text: 'Inventory Tools'
+            size_hint_y: None
+            height: 40
+
+        Button:
+            id: create_inv_report_button
+            text: 'Generate Report from NSSDR and TSA1'
+            font_size: '6pt'
+            size_hint: (1, 0.15)
+            on_press:
+                app.create_inv_report()
+        Label:
+            text: ''
+
+
+<ScreenOrderList>
+    #Screen for showing all orders present
+    name: 'orderlistscreen'
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+
+        CustActionBar:
+
+        Label:
+            text: 'Orders'
+            size_hint_y: None
+            height:40
+
+        ScrollView:
+            #height: 400
+            GridLayout:
+                id: allorders_sv
+                cols: 1
+                spacing: 10
+                size_hint_y: None
+                height: self.minimum_height
+
+<ScreenListOptions>:
+    name: 'screenlistoptions'
+    GridLayout:
+        cols:2
+
+
+<ScreenAuditOrders>:
+    name: 'auditscreen'
+    focused: audit_input
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        CustActionBar:
+        
+        TextInput:
+            id: audit_input
+            text: ''
+            font_size: 60
+            multiline: False
+            # focus: True
+            input_type : 'number' #REMOVED FOR NOW
+            input_filter: 'int'
+            size_hint: (1, None)
+
+        Label:
+            text: 'Enter last 4 digits of order number'
+            size_hint: (1, 0.1)
+        StackLayout:
+            spacing: 10
+            padding: 10
+
+            Button:
+                id: audit_search_button
+                text: 'Mark as present'
+                font_size: '6pt'
+                size_hint: (1, 0.15)
+                on_press:
+                    app.audit_order_search(root.ids.audit_input.text)
+                    root.ids.audit_input.text = ''
+
+            Button:
+                id: show_audit_report_button
+                text: "Show Report"
+                font_size: '6pt'
+                size_hint: (1, 0.15)
+                on_press:
+                    app.show_audit_report()
+
+            Label:
+                text: ''
+
+            
+
+        StackLayout:
+            orientation: 'lr-tb'
+            size_hint: (1, 0.4)
+            padding: 10
+            spacing: 10
+
+            NumberButton:
+                text: '0'
+                on_release: root.ids.audit_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '1'
+                on_release: root.ids.audit_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '2'
+                on_release: root.ids.audit_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '3'
+                on_release: root.ids.audit_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '4'
+                on_release: root.ids.audit_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '5'
+                on_release: root.ids.audit_input.text += self.text
+
+            NumberButton:
+                text: '6'
+                on_release: root.ids.audit_input.text += self.text
+
+            NumberButton:
+                text: '7'
+                on_release: root.ids.audit_input.text += self.text
+
+            NumberButton:
+                text: '8'
+                on_release: root.ids.audit_input.text += self.text
+
+            NumberButton:
+                text: '9'
+                on_release: root.ids.audit_input.text += self.text
+
+            NumberButton:
+                text: '<-'
+                on_release: root.ids.audit_input.text = root.ids.audit_input.text[:-1]
+
+#################################
+
+
+
+
+<ScreenSearchIN>:
+    name: 'ininputscreen'
+    focused: itemnum_input
+    # on_parent:
+    #     if not args[1] and self.focused: self.focused.focus = False
+    #     if args[1]: Clock.schedule_once(app.focus_ini, 0.1) #itemnum_input.focus = True
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        CustActionBar:
+        
+        TextInput:
+            id: itemnum_input
+            text: ''
+            font_size: 60
+            multiline: False
+            # focus: True
+            input_type : 'number' #REMOVED FOR NOW
+            input_filter: 'int'
+            size_hint: (1, None)
+            # on_text_validate:
+            #     print(args[0].text)
+            #     app.search_order(args[0].text)
+            #     self.text = ''
+        Label:
+            text: 'Enter manufacturer item number\n(Enter for order search)'
+            size_hint: (1, 0.1)
+        StackLayout:
+            spacing: 10
+            padding: 10
+            # canvas:
+            #     # Add a red color
+            #     Color:
+            #         rgba: 1, 0, 0, 0.5
+
+            #     # Add a rectangle
+            #     Rectangle:
+            #         pos: self.pos
+            #         size: self.size
+            Button:
+                id: search_order_button
+                text: 'Search for order'
+                font_size: '6pt'
+                size_hint: (1, 0.15)
+                on_press:
+                    app.search_order(root.ids.itemnum_input.text)
+                    root.ids.itemnum_input.text = ''
+            # Button:
+            #     id: search_in_button
+            #     text: 'Convert to CC item number'
+            #     font_size: '4pt'
+            #     size_hint: (0.5, 0.15)
+            #     on_release:
+            #         app.button_search_item_number(root.ids.itemnum_input.text) #, 'manufac')
+            #         root.ids.itemnum_input.text = ''
+            # Button:
+            #     id: search_in_cc_button
+            #     text: 'Convert to Manufac item number'
+            #     font_size: '4pt'
+            #     size_hint: (0.5, 0.15)
+            #     on_release:
+            #         app.button_search_item_number(root.ids.itemnum_input.text, 'cc')
+            #         root.ids.itemnum_input.text = ''
+
+            Button:
+                id: search_in_button
+                text: 'Convert item number'
+                font_size: '6pt'
+                size_hint: (1, 0.15)
+                on_release:
+                    app.button_search_item_number(root.ids.itemnum_input.text)
+                    root.ids.itemnum_input.text = ''
+
+            Button:
+                id: search_ord_fourdigits
+                text: 'Search order #'
+                font_size: '4pt'
+                size_hint: (1, 0.15)
+                on_release:
+                    app.button_search_order_number(root.ids.itemnum_input.text)
+                    root.ids.itemnum_input.text = ''
+
+            # Button:
+            #     id: confirm_orders
+            #     text: "Confirm orders"
+            #     font_size: '6pt'
+
+
+            Label:
+                text: ''
+
+        StackLayout:
+            orientation: 'lr-tb'
+            size_hint: (1, 0.4)
+            padding: 10
+            spacing: 10
+
+            NumberButton:
+                text: '0'
+                on_release: root.ids.itemnum_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '1'
+                on_release: root.ids.itemnum_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '2'
+                on_release: root.ids.itemnum_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '3'
+                on_release: root.ids.itemnum_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '4'
+                on_release: root.ids.itemnum_input.text += self.text
+                size_hint: (0.2, 0.5)
+
+            NumberButton:
+                text: '5'
+                on_release: root.ids.itemnum_input.text += self.text
+
+            NumberButton:
+                text: '6'
+                on_release: root.ids.itemnum_input.text += self.text
+
+            NumberButton:
+                text: '7'
+                on_release: root.ids.itemnum_input.text += self.text
+
+            NumberButton:
+                text: '8'
+                on_release: root.ids.itemnum_input.text += self.text
+
+            NumberButton:
+                text: '9'
+                on_release: root.ids.itemnum_input.text += self.text
+
+            NumberButton:
+                text: '<-'
+                on_release: root.ids.itemnum_input.text = root.ids.itemnum_input.text[:-1]
+
+<ScreenOther>:
+    name: 'otherscreen'
+
+    GridLayout:
+        id: screen_other
+        cols: 1
+        spacing: '8dp'
+        padding: '20dp'
+        size_hint: (1, 1)
+
+        CustActionBar:
+
+        Label:
+            text: 'Other'
+            font_size: 70
+            size_y_hint: 0.1
+
+        Button:
+            id: clear_ecomm_db
+            text: 'Clear Order File'
+            on_release:
+                app.clear_order_file_button()
+
+        Button:
+            id: add_manufac_in_button
+            text: 'Add a missing manufacturer item number'
+            on_release:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'screenfixin'
+
+        Button:
+            text: 'Append from STA spreadsheet'
+            on_release: app.append_from_sta_spreadsheet()
+
+        Button:
+            id: update_in_button
+            text: 'Update an incorrect item number pair'
+            on_release: print('Update IN pair')
+
+        Button:
+            id: sync_intextfile_button
+            text: 'Sync item number database'
+            on_press: app.sync_item_number_db()
+
+        Button:
+            text: 'Push order list to cloud'
+            on_press: app.push_order_db_to_cloud()
+
+<ScreenOutput>:
+    name: 'screenlabeloutput'
+    orderinfo: ''
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+
+        CustActionBar:
+
+        Label:
+            text: root.orderinfo
+            size_hint_y: None
+            height: 140
+
+        ScrollView:
+            #height: 400
+            GridLayout:
+                id: labelout_sv
+                cols: 1
+                spacing: 10
+                size_hint_y: None
+                height: self.minimum_height
+
+<ScreenFixIN>:
+    name: 'screenfixin'
+    BoxLayout:
+        orientation: 'vertical'
+        CustActionBar:
+
+        GridLayout:
+            cols: 2
+            padding: 20
+            spacing: 20
+
+            Label:
+                text: 'CC in'
+
+            Label:
+                text: 'Manufac in'
+            TextInput:
+                id: cc_in_ti
+                input_type : 'number' #REMOVED FOR NOW
+                input_filter: 'int'
+
+            TextInput:
+                id: manufac_in_ti
+                input_type : 'number' #REMOVED FOR NOW
+                input_filter: 'int'
+
+        Button:
+            text: 'Enter'
+            on_release:
+                app.add_missing_in_pair(root.ids.cc_in_ti.text, root.ids.manufac_in_ti.text)
+                root.ids.cc_in_ti.text, root.ids.manufac_in_ti.text = '', ''
+
+
+<CustActionBar@ActionBar>:
+    ActionView:
+        id: av
+        ActionPrevious:
+            title: '  JL TC Tools'
+            app_icon: app.icon if app.icon else ''
+            on_release:
+                app.root.transition.direction = 'right'
+                app.root.current = 'mainscreen'
+
+
+<LabelButton>:
+
+    background_normal: ''
+    #background_color: (0, 0.2, 0.2, 1)
+    font_size: '8pt'
+    height: 140
+    size_hint_y: None
+
+
+# <LabelButt@Button>
+#     background_normal: ''
+#     background_color: (0, 0.2, 0.2, 1)
+#     font_size: '8pt'
+
+<Button>:
+    background_normal: ''
+    background_color: (0, 0.5, 0.5, 1)
+    #font_size: 40
+
+<OrderListLabel>:
+    size_hint: 1, None
+    size: self.texture_size
+
+<NumberButton@Button>:
+    background_normal: ''
+    background_color: (0, 0.4, 0.5, 1)
+    size_hint: (1/6, 0.5)
