@@ -1,4 +1,4 @@
-# Android application build using Python and Kivy.
+# Android application built using Python and Kivy.
 
 Handles conversion of item numbers between vendor item number and local item number using a built in SQLite database.
 
